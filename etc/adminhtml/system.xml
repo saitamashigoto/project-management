@@ -10,7 +10,7 @@
         <tab id="saitama" translate="label" sortOrder="100">
             <label>Saitama</label>
         </tab>
-        <section id="project-management" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+        <section id="project_management" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
             <label>Project Management Configuration</label>
             <tab>saitama</tab>
@@ -32,10 +32,6 @@
                 <field id="new_project_pomodoro_count" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>New Project Pomodoro Count</label>
                     <validate>required-entry validate-digits validate-digits-range digits-range-1-9999999</validate>
-                </field>
-                <field id="new_project_pomodoro_count" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>New Project Pomodoro Count</label>
-                    <validate>required-entry validate-digits validate-digits-range digits-range-1-100</validate>
                 </field>
             </group>
             <group id="project" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">

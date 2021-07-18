@@ -6,4 +6,4 @@
 
 use Magento\Framework\Component\ComponentRegistrar;
 
-ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Saitma_ProjectManagement', __DIR__);
+ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Saitama_ProjectManagement', __DIR__);
