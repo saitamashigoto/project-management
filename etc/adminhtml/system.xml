@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="saitama" translate="label" sortOrder="100">
+            <label>Saitama</label>
+        </tab>
+        <section id="project-management" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Project Management Configuration</label>
+            <tab>saitama</tab>
+            <resource>Saitama_ProjectManagement::config_project_management</resource>
+            <group id="pomodoro" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Pomodoro Settings</label>
+                <field id="duration" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Duration</label>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-1-100</validate>
+                </field>
+                <field id="short_break_duration" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Short Break Duration</label>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-1-100</validate>
+                </field>
+                <field id="long_break_duration" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Long Break Duration</label>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-1-100</validate>
+                </field>
+                <field id="new_project_pomodoro_count" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>New Project Pomodoro Count</label>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-1-9999999</validate>
+                </field>
+                <field id="new_project_pomodoro_count" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>New Project Pomodoro Count</label>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-1-100</validate>
+                </field>
+            </group>
+            <group id="project" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Project Settings</label>
+                <field id="duration" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Duration</label>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-1-999999</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
