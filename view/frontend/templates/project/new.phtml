@@ -1,0 +1,125 @@
+
+<form class="form create project form-create-project"
+      action="<?= $escaper->escapeUrl($block->getPostActionUrl()) ?>"
+      method="post"
+      id="form-validate"
+      enctype="multipart/form-data"
+      autocomplete="off">
+    <?= /* @noEscape */ $block->getBlockHtml('formkey') ?>
+    <fieldset class="fieldset create info">
+        <legend class="legend"><span><?= $escaper->escapeHtml(__('General Information')) ?></span></legend><br>
+        <input type="hidden" name="id" id="id" value="<?= $escaper->escapeHtmlAttr($block->getProjectId()); ?>"/>
+            <div class="field title required">
+                <label for="title" class="label">
+                    <span>
+                        <?= $block->escapeHtml(__('Title')) ?>
+                    </span>
+                </label>
+                <div class="control">
+                    <input type="text"
+                        name="title"
+                        id="title"
+                        value="<?= $block->escapeHtmlAttr($block->getTitle()) ?>"
+                        title="<?= $block->escapeHtmlAttr(__('Title')) ?>"
+                        data-validate="{required:true}"
+                        class="input-text"
+                    >
+                </div>
+            </div>
+            <div class="field date field-due-date required">
+                <label class="label" for="due-date">
+                    <span><?= $block->escapeHtml(__('Due Date')) ?></span>
+                </label>
+                <div class="control project-due-date">
+                    <?= $block->getDueDateHtml(); ?>
+                </div>
+            </div>
+            <?php $translatedCalendarConfigJson = $block->getTranslatedCalendarConfigJson(); ?>
+            <?php $scriptString = <<<code
+                require([
+                    'jquery',
+                    'jquery-ui-modules/datepicker'
+                ], function($){
+
+                //<![CDATA[
+                    $.extend(true, $, {
+                        calendarConfig: {$translatedCalendarConfigJson}
+                    });
+                //]]>
+
+                });
+                code;
+            ?>
+            <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $scriptString, false) ?>
+            <div class="field pomodoro-duration required">
+                <label for="pomodoro-duration" class="label">
+                    <span>
+                        <?= $block->escapeHtml(__('Pomodoro Duration')) ?>
+                    </span>
+                </label>
+                <div class="control">
+                    <input type="text"
+                        name="pomodoro_duration"
+                        id="pomodoro-duration"
+                        value="<?= $block->escapeHtmlAttr($block->getDuration()) ?>"
+                        title="<?= $block->escapeHtmlAttr(__('Pomodoro Duration')) ?>"
+                        class="input-text"
+                        data-validate="{required:true, 'validate-pomodoro-duration':true}"
+                    >
+                </div>
+            </div>
+            <div class="field description required">
+                <label class="label" for="description">
+                    <span><?= $block->escapeHtml(__('Describe your project')) ?></span>
+                </label>
+                <div class="control">
+                    <textarea name="description"
+                            id="description"
+                            title="<?= $block->escapeHtmlAttr(__('Describe your project')) ?>"
+                            class="input-text"
+                            cols="5"
+                            rows="3"
+                            data-validate="{required:true}"
+                    ><?= $block->escapeHtml($block->getDescription()); ?></textarea>
+                </div>
+            </div>
+        </fieldset>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <button type="submit"
+                    class="action submit primary"
+                    title="<?= $escaper->escapeHtmlAttr(__('Create')) ?>"
+                    id="createBtn">
+                <span><?= $escaper->escapeHtml(__('Save')) ?></span>
+            </button>
+        </div>
+        <div class="secondary">
+            <a class="action back"
+               href="<?= $escaper->escapeUrl($block->getBackUrl()) ?>">
+                <span><?= $escaper->escapeHtml(__('Back')) ?></span>
+            </a>
+        </div>
+    </div>
+</form>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Piyush_ProjectManagement/js/validation": {}
+        }
+    }
+</script>
+
+<?php $ignore = /* @noEscape */ '\'input[id$="full"]\'';
+$scriptString = <<<script
+require([
+    'jquery',
+    'mage/mage'
+], function($){
+    var dataForm = $('#form-validate');
+    var ignore = {$ignore};
+    dataForm.mage('validation', {}).find('input:text').attr('autocomplete', 'off');
+});
+script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $scriptString, false) ?>

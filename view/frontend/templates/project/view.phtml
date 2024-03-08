@@ -1,0 +1,222 @@
+<?php
+    $pomodoro = $block->getPomodoro();
+    $duration = $pomodoro->getDuration() * 60;
+    $minutes = $pomodoro->getMinutes();
+    $seconds = $pomodoro->getSeconds();
+    $duration = $duration - $minutes * 60 - $seconds;
+    $minutes = (int)($duration / 60);
+    $seconds = $duration % 60;
+    $minutes = sprintf("%02s", $minutes);
+    $seconds = sprintf("%02s", $seconds);
+    $duration = (int)$pomodoro->getDuration();
+    $chartData = $block->getChartData();
+?>
+
+<div class="piyush-project-management-view-container">
+    <div class="pomodoro-container">
+        <div class="timer">
+            <div class="min"><?= $escaper->escapeHtmlAttr($minutes); ?></div>
+            <div><?= $escaper->escapeHtml(':'); ?></div>
+            <div class="sec"><?= $escaper->escapeHtmlAttr($seconds); ?></div>
+        </div>
+        <div class="buttons">
+            <button type="button" class="pause"><?= $block->escapeHtml(__('Start')); ?></button>
+            <button type="button" class="stop"><?= $block->escapeHtml(__('Stop')); ?></button>
+        </div>
+    </div>
+    <audio id="pomodoro_audio"></audio>
+    <div id="stats"></div>
+</div>
+
+<script>
+    require([
+        'jquery',
+        'googleCharts',        
+        'domReady!'
+    ], function($, alert) {
+
+        const icon = { 
+            success: '<span class="material-symbols-outlined">task_alt</span>',
+            warning: '<span class="material-symbols-outlined">warning</span>'
+        }; 
+
+        const showToast = (message = "Sample Message", toastType = "info", duration = 5000) => { 
+            const box = document.createElement("div"); 
+            box.classList.add( 
+                "toast", `toast-${toastType}`); 
+            box.innerHTML = `<div class="toast-content-wrapper"> 
+                                <div class="toast-icon"> 
+                                    ${icon[toastType]} 
+                                </div> 
+                                <div class="toast-message">${message}</div> 
+                                <div class="toast-progress"></div> 
+                            </div>`; 
+            duration = duration || 5000; 
+            box.querySelector(".toast-progress").style.animationDuration = 
+                    `${duration / 1000}s`; 
+
+            const toastAlready = document.body.querySelector(".toast"); 
+            if (toastAlready) { 
+                toastAlready.remove(); 
+            } 
+
+            document.body.appendChild(box);
+        }; 
+
+        const startText = '<?= $block->escapeHtml(__('Start')); ?>';
+        const pauseText = '<?= $block->escapeHtml(__('Pause')); ?>';
+        const duration = parseInt('<?= $escaper->escapeHtmlAttr($duration); ?>');
+        const minutesEle = document.querySelector(".timer .min");
+        const secondsEle = document.querySelector(".timer .sec");
+        const startButton = document.querySelector("button.pause");
+        const stopButton =  document.querySelector("button.stop");
+        const timeoutAudio = document.getElementById("pomodoro_audio");
+        const persistUrl = '<?= $escaper->escapeUrl($block->getPersistUrl()); ?>';
+        const pomodoroAudioUrl = '<?= $escaper->escapeUrl($block->getSoundUrl()) ?>';
+        const customerId = parseInt('<?= $escaper->escapeHtmlAttr($block->getCustomerId()); ?>');
+        const projectId = parseInt('<?= $escaper->escapeHtmlAttr($block->getProjectIdFromRegistry()); ?>');
+
+        let remainingSeconds = parseInt(secondsEle.textContent.trim());
+        let remainingMinutes = parseInt(minutesEle.textContent.trim());
+        let timer;
+        let isStopped = true;
+
+        const showAlert = (message) => {
+            showToast(message, 'warning');
+        }
+
+        const updatePomodoro = (data) => {
+            return $.ajax({
+                url: persistUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: data
+            });
+        }
+
+        const padWithZero = (str) => {
+            return str.padStart(2, '0');
+        };
+
+        const renderCurrentTime = () => {
+            minutesEle.textContent = padWithZero(remainingMinutes.toString());
+            secondsEle.textContent = padWithZero(remainingSeconds.toString());
+        }
+
+        const pauseTimer = () => {
+            if (!isStopped) {
+                if (timer) {
+                    clearInterval(timer);
+                }
+                isStopped = true;
+                startButton.textContent = startText;
+            }
+        }
+
+        const startTimer = () => {
+            if (isStopped) {
+                isStopped = false;
+                timer = setInterval(renderTime, 1000);
+                startButton.textContent = pauseText;
+            }
+        };
+
+        const stopTimer = () => {
+            if (isStopped) {
+                return;
+            }
+            isStopped = true;
+            if (timer) {
+                clearInterval(timer);
+            }
+            startButton.textContent = startText;
+            remainingSeconds = 0;
+            remainingMinutes = duration;
+            renderCurrentTime();
+            updatePomodoro({
+                customer_id: customerId,
+                project_id: projectId,
+                form_key: $.mage.cookies.get('form_key'),
+                mode: 'reset',
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                showToast($.mage.__("Unable to sync data with the database."), "warning");
+            });
+        };
+
+        // Initialize timeout sound
+        if (pomodoroAudioUrl) {
+            timeoutAudio.src = pomodoroAudioUrl;
+            timeoutAudio.load();
+        }
+
+        // Attach onclick event to buttons
+        startButton.onclick = () => {
+            if (isStopped) {
+                startTimer();
+            } else {
+                pauseTimer();
+            }
+        };
+
+        stopButton.onclick = stopTimer;
+
+        // function to display time
+        const renderTime = () => {
+            if (remainingSeconds === 0) {
+                if (remainingMinutes === 0) {
+                    isStopped = true;
+                    clearInterval(timer);
+                    if (pomodoroAudioUrl) {
+                        timeoutAudio.play();
+                    }
+                    remainingSeconds = 0;
+                    remainingMinutes = duration;
+                    updatePomodoro({
+                        customer_id: customerId,
+                        project_id: projectId,
+                        form_key: $.mage.cookies.get('form_key'),
+                        mode: 'update',
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        showToast($.mage.__("Unable to sync data with the database."), "warning");
+                    }).done(function(data) {
+                        showToast($.mage.__("Keep up the good work."), "success");
+                    });
+                } else {
+                    remainingMinutes -= 1;
+                    remainingSeconds = 59;
+                }
+            } else {
+                remainingSeconds -= 1;
+            }
+            renderCurrentTime();
+        };
+
+        const chartData = JSON.parse('<?= $chartData ?>');
+        let chartArray = [];
+        chartData.forEach(function (value) {
+            chartArray.push([value.label, Number(value.value)]);
+        });
+
+        google.charts.load('current', {'packages':['line']});
+        google.charts.setOnLoadCallback(drawChart);
+        window.addEventListener('resize', drawChart);
+
+        function drawChart() {
+
+            let data = new google.visualization.DataTable();
+            data.addColumn('string', 'Date');
+            data.addColumn('number', 'Minutes');
+            data.addRows(chartArray);
+
+            const options = {
+                chart: {
+                    title: $.mage.__('Project statistics'),
+                    subtitle: $.mage.__('in minutes spent per month')
+                },
+            };
+
+            var chart = new google.charts.Line(document.getElementById('stats'));
+            chart.draw(data, google.charts.Line.convertOptions(options));
+        }
+    });
+</script>

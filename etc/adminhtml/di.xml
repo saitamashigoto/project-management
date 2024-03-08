@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Piyush\ProjectManagement\Model\Config\Backend\PomodoroAudio">
+      <plugin name="piyush_project_management_delete_exsiting_pomodoro_audio"
+        type="Piyush\ProjectManagement\Plugin\DeleteExistingPomodoroAudio" sortOrder="1" disabled="false" />
+    </type>
+</config>

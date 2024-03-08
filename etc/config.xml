@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <project_management>
+            <general>
+                <is_enabled>0</is_enabled>
+                <duration>30</duration>
+                <pomodoro_audio>default/pomodoro-audio.mp3</pomodoro_audio>
+            </general>
+        </project_management>
+    </default>
+</config>

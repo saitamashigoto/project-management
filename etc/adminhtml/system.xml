@@ -1,46 +1,37 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
--->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
-    <system>
-        <tab id="saitama" translate="label" sortOrder="100">
-            <label>Saitama</label>
-        </tab>
-        <section id="project_management" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-            <class>separator-top</class>
-            <label>Project Management Configuration</label>
-            <tab>saitama</tab>
-            <resource>Saitama_ProjectManagement::config_project_management</resource>
-            <group id="pomodoro" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Pomodoro Settings</label>
-                <field id="duration" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Duration</label>
-                    <validate>required-entry validate-digits validate-digits-range digits-range-1-100</validate>
+   <system>
+       <section id="project_management" translate="label" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+           <class>separator-top</class>
+           <label>Project Management</label>
+           <tab>customer</tab>
+           <resource>Piyush_ProjectManagement::config</resource>
+           <group id="general" translate="label" showInDefault="1" showInWebsite="1">
+               <label>General Settings</label>
+               <field id="is_enabled" translate="label comment" type="select" showInDefault="1"  showInWebsite="1">
+                   <label>Enable</label>
+                   <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+               </field>
+               <field id="duration" translate="label" type="text" showInDefault="1" showInWebsite="1" canRestore="1">
+                   <label>Pomodoro Default Duration</label>
+                   <depends>
+                       <field id="*/*/is_enabled">1</field>
+                   </depends>
+                   <validate>required-entry validate-number-range number-range-10-120</validate>
+                   <comment>Please specify a default duration of pomodoro between 10 and 120 in minutes. This value can be changed per project from the customer account.</comment>
+               </field>
+               <field id="pomodoro_audio" translate="label"
+                    type="Magento\Config\Block\System\Config\Form\Field\File"
+                     showInDefault="1" showInWebsite="1">
+                    <label>Pomodoro Finish Sound</label>
+                    <backend_model>Piyush\ProjectManagement\Model\Config\Backend\PomodoroAudio</backend_model>
+                    <upload_dir config="system" scope_info="1">pomodoro/audio/</upload_dir>
+                    <comment>This sound will be played when a pomodoro has been finished successfully.</comment>
+                    <depends>
+                       <field id="*/*/is_enabled">1</field>
+                   </depends>
                 </field>
-                <field id="short_break_duration" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Short Break Duration</label>
-                    <validate>required-entry validate-digits validate-digits-range digits-range-1-100</validate>
-                </field>
-                <field id="long_break_duration" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Long Break Duration</label>
-                    <validate>required-entry validate-digits validate-digits-range digits-range-1-100</validate>
-                </field>
-                <field id="new_project_pomodoro_count" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>New Project Pomodoro Count</label>
-                    <validate>required-entry validate-digits validate-digits-range digits-range-1-9999999</validate>
-                </field>
-            </group>
-            <group id="project" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Project Settings</label>
-                <field id="duration" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Duration</label>
-                    <validate>required-entry validate-digits validate-digits-range digits-range-1-999999</validate>
-                </field>
-            </group>
-        </section>
-    </system>
+           </group>
+       </section>
+   </system>
 </config>

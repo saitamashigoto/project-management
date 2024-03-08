@@ -1,14 +1,9 @@
 <?xml version="1.0"?>
-<!--
-/**
- * This file is part of the Klarna KP module
- *
- * (c) Klarna Bank AB (publ)
- *
- * For the full copyright and license information, please view the NOTICE
- * and LICENSE files that were distributed with this source code.
- */
--->
+
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Piyush\ProjectManagement\Api\Data\ProjectInterface"
+                type="Piyush\ProjectManagement\Model\Project" />
+    <preference for="Piyush\ProjectManagement\Api\Data\PomodoroInterface"
+                type="Piyush\ProjectManagement\Model\Pomodoro" />
 </config>

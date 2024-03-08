@@ -1,0 +1,111 @@
+<div class="new-project-container">
+    <button id="new_project_button" class="action new-project secondary" type="button"><?= $block->escapeHtml(__('Create New')); ?></button>
+</div>
+
+<?php $projects = $block->getProjects(); ?>
+<?php if ($projects && count($projects)) : ?>
+    <div class="table-wrapper project-list">
+        <table class="data table table-project-items history" id="my-projects-table">
+            <caption class="table-caption"><?= $block->escapeHtml(__('Projects')) ?></caption>
+            <thead>
+                <tr>
+                    <th scope="col" class="col id"><?= $block->escapeHtml(__('Project #')) ?></th>
+                    <th scope="col" class="col total"><?= $block->escapeHtml(__('Title')) ?></th>
+                    <th scope="col" class="col date"><?= $block->escapeHtml(__('Created Date')) ?></th>
+                    <th scope="col" class="col date"><?= $block->escapeHtml(__('Due Date')) ?></th>
+                    <th scope="col" class="col actions"><?= $block->escapeHtml(__('Action')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($projects as $project) : ?>
+                    <tr>
+                        <td data-th="<?= $block->escapeHtml(__('Project #')) ?>" class="col id"><?= $block->escapeHtml($project->getId()) ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Title')) ?>" class="col title"><?= $block->escapeHtml($project->getTitle()) ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Created Date')) ?>" class="col date"><?= /* @noEscape */ $block->formatDate($project->getCreatedAt()) ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Due Date')) ?>" class="col date"><?= /* @noEscape */ $block->formatDate($project->getDueDate()) ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Actions')) ?>" class="col actions">
+                            <a href="<?= $block->escapeUrl($block->getViewUrl($project)) ?>" class="action view">
+                                <span><?= $block->escapeHtml(__('View')) ?></span>
+                            </a>
+                            <a href="<?= $block->escapeUrl($block->getEditUrl($project)) ?>" class="action edit">
+                                <span><?= $block->escapeHtml(__('Edit')) ?></span>
+                            </a>
+                            <a data-project-id="<?= $block->escapeHtmlAttr($project->getId()); ?>" href="<?= $block->escapeUrl($block->getDeleteUrl($project)) ?>" class="action delete">
+                                <span><?= $block->escapeHtml(__('Delete')) ?></span>
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php if ($block->getPagerHtml()) : ?>
+        <div class="order-products-toolbar toolbar bottom"><?= $block->getPagerHtml(); ?></div>
+    <?php endif ?>
+<?php else : ?>
+    <div class="message info empty"><span><?= $block->escapeHtml($block->getEmptyProjectsMessage()); ?></span></div>
+<?php endif ?>
+<script>
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/confirm'
+    ], function ($, confirmation) {
+        'use strict';
+
+        $('#new_project_button').on('click',  function(event) {
+            window.location.href = '<?= $block->escapeUrl($block->getNewUrl()); ?>';
+        });
+
+        $('.action.delete').on('click', function(e) {
+            e.preventDefault();
+            confirmation({
+                title: $.mage.__('Confirmation'),
+                content: $.mage.__('Are you sure, want to delete this project ?'),
+                buttons: [{
+                    text: $.mage.__('Cancel'),
+                    class: 'action-secondary action-dismiss',
+                    click: function (event) {
+                        this.closeModal(event);
+                            }
+                    }, {
+                            text: $.mage.__('OK'),
+                            class: 'action-primary action-accept',
+                            click: () => {
+                                const form = document.createElement('form');
+                        
+                                form.setAttribute(
+                                    'action',
+                                    this.getAttribute('href')                            
+                                );
+                                form.style = 'display: none';
+                                form.setAttribute('method', 'POST');
+                                
+                                const buttonSubmit = document.createElement('input');
+                                buttonSubmit.type = 'submit';
+                                buttonSubmit.value = 'Submit';
+
+                                const formKey = document.createElement('input');
+                                formKey.type = 'hidden';
+                                formKey.value = '<?= $block->getFormKey(); ?>';
+                                formKey.name = 'form_key';
+
+                                const projectId = document.createElement('input');
+                                projectId.type = 'hidden';
+                                projectId.value = this.getAttribute('data-project-id');
+                                projectId.name = 'project_id';
+
+                                form.appendChild(buttonSubmit);
+                                form.appendChild(formKey);
+                                form.appendChild(projectId);
+                                document.body.appendChild(form);
+                                form.submit();
+                                        
+                            }
+                    }],
+
+                clickableOverlay: false
+            });
+
+        });
+    })
+</script>
